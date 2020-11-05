@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "558012787340",
+    "firebase_url": "https://mhc-tcc.firebaseio.com",
+    "project_id": "mhc-tcc",
+    "storage_bucket": "mhc-tcc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:558012787340:android:515ac3355af795739ce9a9",
+        "android_client_info": {
+          "package_name": "com.mhc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "558012787340-aginnd0lk8qcu4tcrqhcjdjl5avk8ldj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArNeSfYVwLdRHYZT0-o3WwkcpIwYvIImU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "558012787340-aginnd0lk8qcu4tcrqhcjdjl5avk8ldj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, SafeAreaView, TouchableOpacity, TouchableHighlight, Alert } from 'react-native';
 import Reactotron from 'reactotron-react-native';
-import api from '../../services/api';
+import api from '../../../services/api';
 import styles from './styles';
-import { showError, showSucess } from '../../common';
+import { showError, showSucess } from '../../../common';
 
 import CalendarStrip from 'react-native-calendar-strip';
 import { FlatList } from 'react-native-gesture-handler';

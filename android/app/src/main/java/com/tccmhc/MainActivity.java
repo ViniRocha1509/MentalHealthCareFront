@@ -1,4 +1,4 @@
-package com.tccmhc;
+package com.mhc;
 
 import com.facebook.react.ReactActivity;
 

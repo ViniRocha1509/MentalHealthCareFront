@@ -8,21 +8,23 @@ const AuthContextData = {};
 const AuthContext = createContext(AuthContextData);
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(initialUser);
     const [loading, setLoading] = useState(true);
     const [signed, setSigned] = useState(null);
     const [created, setcreated] = useState(null);
+    const initialUser = { Name: "", Cpf: "", TypeUser: 0, Id: 0 };
 
     useEffect(() => {
         async function loadStoragedData() {
             const storagedUser = await AsyncStorage.getItem('@MHC:user');
             const storagedToken = await AsyncStorage.getItem('@MHC:token');
             const storagedSingned = await AsyncStorage.getItem('@MHC:singned');
-
             if (storagedUser && storagedToken) {
                 api.defaults.headers.Authorization = `Bearer ${storagedToken}`;
                 setSigned(storagedSingned !== null ? JSON.parse(storagedSingned) : new Boolean());
                 setUser(JSON.parse(storagedUser));
+            }else{
+                setUser(initialUser);
             }
             setLoading(false);
         }
@@ -56,6 +58,7 @@ export const AuthProvider = ({ children }) => {
 
                 api.defaults.headers['Authorization'] = `Bearer ${response.data.token}`;
                 setSigned(true);
+                await setUser(response.data.user);
                 setLoading(false);
             } catch (_err) {
                 showError(_err.response.data);
@@ -64,7 +67,6 @@ export const AuthProvider = ({ children }) => {
     };
 
     async function signUp(account) {
-        console.log(account);
         if (account.email.length === 0 || account.lastName.length === 0 || account.name.length === 0 || account.cpf.length === 0 || account.password.length === 0 || account.confirmPassword.length === 0) {
             throw new Error('Preencha os campos para prosseguir');
         } else {
@@ -85,23 +87,19 @@ export const AuthProvider = ({ children }) => {
 
     async function signUpPsychologist(user, psychologists) {
         try {
-            Reactotron.log(user);
-            Reactotron.log(psychologists);
             const response = await api.post('/psychologist', {
                 user,
                 psychologists
             });
-            Reactotron.log(response);
         } catch (_err) {
-            Reactotron.log(_err);
             throw new Error(_err);
         }
     }
 
     function signOut() {
         AsyncStorage.clear().then(() => {
-            setUser(null);
-            setSigned(null);
+            setUser(initialUser);
+            setSigned(false);
         })
     }
 

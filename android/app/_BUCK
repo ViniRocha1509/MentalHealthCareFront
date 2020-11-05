@@ -35,12 +35,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "com.tccmhc",
+    package = "com.mhc",
 )
 
 android_resource(
     name = "res",
-    package = "com.tccmhc",
+    package = "com.mhc",
     res = "src/main/res",
 )
 

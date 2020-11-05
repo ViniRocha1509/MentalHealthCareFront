@@ -3,6 +3,7 @@ if (__DEV__) {
 }
 
 import { AppRegistry } from 'react-native';
+import myFirebaseApp from './src/services/firebase';
 import App from './src/App';
 import { name as appName } from './app.json';
 import 'react-native-gesture-handler';

@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, FlatList, SafeAreaView, Image, TouchableHighlight, ScrollView, TextInput } from 'react-native';
 import { Rating } from 'react-native-ratings';
-import { showError } from '../../common';
-import api from '../../services/api';
+import { showError } from '../../../common';
+import api from '../../../services/api';
 import styles from './styles';
 import { FloatingAction } from "react-native-floating-action";
 import Slider from '@react-native-community/slider';
@@ -20,12 +20,11 @@ class ListPsychologist extends React.Component {
         psychologistInfo: {},
         onEndReachedCalledDuringMomentum: true,
         filter: { distance: 50 },
-        isfilter: false,
+        isfilter: true,
         isCepSet: false,
     }
 
     initialFilter = {
-
         distance: 50,
         page: 1,
         cep: '',
@@ -36,10 +35,11 @@ class ListPsychologist extends React.Component {
         gender: undefined,
         rating: 0,
     }
+    
     renderItem = ({ item }) => (
         <View style={styles.listContainer}>
             <View style={styles.paramsPsy}>
-                <Image source={require('../../../assets/images/padrao.jpg')} resizeMode="contain"
+                <Image source={require('../../../../assets/images/padrao.jpg')} resizeMode="contain"
                     style={styles.image} />
                 <View style={styles.paramsPsyColum}>
                     <Text style={styles.name}>{item.user.name + " " + item.user.lastName}</Text>
@@ -70,11 +70,14 @@ class ListPsychologist extends React.Component {
                 <TouchableHighlight style={styles.buttonList} onPress={() => { }}>
                     <Text style={styles.buttonText}>Mensagem</Text>
                 </TouchableHighlight>
-                <TouchableHighlight style={styles.buttonList} onPress={() => { }}>
+                <TouchableHighlight style={styles.buttonList} onPress={() => {
+                    this.props.navigation.navigate('ProfilePsychologist', {
+                        psychologistId: item.id
+                    });
+                }}>
                     <Text style={styles.buttonText}>Pefil</Text>
                 </TouchableHighlight>
             </View>
-
         </View>
     )
 
@@ -188,6 +191,10 @@ class ListPsychologist extends React.Component {
         this.setState({ isfilter: false });
     }
 
+    closeFilter = () => {
+        this.setState({ isfilter: true });
+    }
+
     cleatFilter = () => {
         this.setState({ isfilter: true, docs: [], isCepSet: false });
         this.loadPsychologist(this.initialFilter);
@@ -197,7 +204,7 @@ class ListPsychologist extends React.Component {
         const actionsFilter = [
             {
                 text: "Filter",
-                icon: require("../../../assets/Filter-2-icon.png"),
+                icon: require("../../../../assets/Filter-2-icon.png"),
                 name: "bt_filter",
                 position: 1,
             },
@@ -205,7 +212,7 @@ class ListPsychologist extends React.Component {
         const actionsClose = [
             {
                 text: "Close",
-                icon: require("../../../assets/close.png"),
+                icon: require("../../../../assets/close.png"),
                 name: "bt_close",
                 position: 1
             },
