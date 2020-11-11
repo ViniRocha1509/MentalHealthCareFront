@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, SafeAreaView, Image, TouchableHighlight, ScrollView, TextInput } from 'react-native';
+import { View, Text, FlatList, SafeAreaView, Image, TouchableHighlight, ScrollView, TextInput, ActivityIndicator } from 'react-native';
 import { Rating } from 'react-native-ratings';
 import { showError } from '../../../common';
 import api from '../../../services/api';
@@ -9,12 +9,9 @@ import Slider from '@react-native-community/slider';
 import axios from 'axios';
 import Reactotron from 'reactotron-react-native';
 import DropDownPicker from 'react-native-dropdown-picker'
+import Spinner from 'react-native-loading-spinner-overlay';
 
 class ListPsychologist extends React.Component {
-    componentDidMount() {
-        this.loadPsychologist({});
-    }
-
     state = {
         docs: [],
         psychologistInfo: {},
@@ -22,6 +19,8 @@ class ListPsychologist extends React.Component {
         filter: { distance: 50 },
         isfilter: true,
         isCepSet: false,
+        spinner: false,
+        withResult: true
     }
 
     initialFilter = {
@@ -35,12 +34,36 @@ class ListPsychologist extends React.Component {
         gender: undefined,
         rating: 0,
     }
-    
+
+    componentDidMount() {
+        this._unsubscribe = this.props.navigation.addListener('focus', () => {
+            if (this.state.docs.length > 0) {
+                this.setState({ isfilter: true, docs: [] });
+            }
+
+            this.loadPsychologist(this.initialFilter);
+        });
+    }
+
+    componentWillUnmount() {
+        this._unsubscribe();
+    }
+
     renderItem = ({ item }) => (
         <View style={styles.listContainer}>
             <View style={styles.paramsPsy}>
-                <Image source={require('../../../../assets/images/padrao.jpg')} resizeMode="contain"
-                    style={styles.image} />
+                {
+                    !item.user.image ?
+                        <Image source={require('../../../../assets/images/padrao.jpg')}
+                            style={styles.image} />
+                        :
+                        <Image
+                            style={styles.image}
+                            source={{
+                                uri: item.user.image,
+                            }}
+                        />
+                }
                 <View style={styles.paramsPsyColum}>
                     <Text style={styles.name}>{item.user.name + " " + item.user.lastName}</Text>
                     <Text style={styles.crm}>CRM:</Text>
@@ -89,8 +112,9 @@ class ListPsychologist extends React.Component {
             let config = { params: { ...filter } };
             const response = await api.get(`/patient/FindPsychologists?`, config);
             const { docs, ...psychologistInfo } = response.data;
-            this.setState({ docs: [...this.state.docs, ...docs], psychologistInfo, filter })
+            this.setState({ docs: [...this.state.docs, ...docs], psychologistInfo, filter, withResult: docs.length > 0, spinner: false });
         } catch (error) {
+            this.setState({ spinner: false });
             showError(error.response.data);
         }
     }
@@ -110,10 +134,12 @@ class ListPsychologist extends React.Component {
     loadMore = () => {
         const { psychologistInfo } = this.state;
 
-        if (psychologistInfo.hasNextPage === false) return;
+        if (psychologistInfo.hasNextPage === false) {
+            this.setState({ spinner: false })
+            return;
+        }
         const filters = {};
         filters.page = psychologistInfo.pageNumber + 1;
-
         this.loadPsychologist(filters);
     };
 
@@ -195,8 +221,8 @@ class ListPsychologist extends React.Component {
         this.setState({ isfilter: true });
     }
 
-    cleatFilter = () => {
-        this.setState({ isfilter: true, docs: [], isCepSet: false });
+    clearFilter = () => {
+        this.setState({ isfilter: true, docs: [], isCepSet: false,  withResult: true });
         this.loadPsychologist(this.initialFilter);
     }
 
@@ -228,30 +254,56 @@ class ListPsychologist extends React.Component {
         const { navigation } = this.props;
         return (
             this.state.isfilter ?
-                <SafeAreaView style={styles.container}>
-                    <FlatList
-                        contentContainerStyle={styles.list}
-                        data={this.state.docs}
-                        keyExtractor={item => item.id.toString()}
-                        renderItem={this.renderItem}
-                        onEndReached={() => {
-                            if (!this.state.onEndReachedCalledDuringMomentum) {
-                                this.loadMore();
-                                this.state.onEndReachedCalledDuringMomentum = true;
-                            }
-                        }}
-                        onEndReachedThreshold={0.4}
-                        onMomentumScrollBegin={() => {
-                            this.state.onEndReachedCalledDuringMomentum = false;
-                        }}
-                    />
-                    <FloatingAction
-                        actions={actionsFilter}
-                        color="#FC6663"
-                        overrideWithAction={true}
-                        onPressItem={this.openFilter}
-                    />
-                </SafeAreaView >
+                this.state.docs.length > 0 ?
+
+                    <SafeAreaView style={styles.container}>
+                        <Spinner
+                            visible={this.state.spinner}
+                            textContent={'Loading...'}
+                            textStyle={styles.spinnerTextStyle}
+                        />
+                        <FlatList
+                            contentContainerStyle={styles.list}
+                            data={this.state.docs}
+                            keyExtractor={item => item.id.toString()}
+                            renderItem={this.renderItem}
+                            onEndReached={() => {
+                                if (!this.state.onEndReachedCalledDuringMomentum) {
+                                    this.setState({ spinner: true });
+                                    this.loadMore();
+                                    this.state.onEndReachedCalledDuringMomentum = true;
+                                }
+                            }}
+                            onEndReachedThreshold={0.4}
+                            onMomentumScrollBegin={() => {
+                                this.state.onEndReachedCalledDuringMomentum = false;
+                            }}
+                        />
+                        <FloatingAction
+                            actions={actionsFilter}
+                            color="#FC6663"
+                            overrideWithAction={true}
+                            onPressItem={this.openFilter}
+                        />
+                    </SafeAreaView >
+
+                    :
+                    this.state.withResult == false ?
+                        <SafeAreaView style={styles.container}>
+                            <Text style={styles.noResult}>Nenhum Resultado encontrado</Text>
+                            <FloatingAction
+                                actions={actionsFilter}
+                                color="#FC6663"
+                                overrideWithAction={true}
+                                onPressItem={this.openFilter}
+                            />
+                        </SafeAreaView>
+                        :
+                        <Spinner
+                            visible={true}
+                            textContent={'Loading...'}
+                            textStyle={styles.spinnerTextStyle}
+                        />
                 :
                 <SafeAreaView style={styles.container}>
                     <ScrollView style={styles.scrollview}>
@@ -336,7 +388,7 @@ class ListPsychologist extends React.Component {
                             <TouchableHighlight style={styles.touchButton} onPress={this.loadListFilter}>
                                 <Text style={styles.buttonTextFilter}>Filtrar</Text>
                             </TouchableHighlight>
-                            <TouchableHighlight style={styles.signUpLink} onPress={this.cleatFilter}>
+                            <TouchableHighlight style={styles.signUpLink} onPress={this.clearFilter}>
                                 <Text style={styles.signUpLinkText}>Limpar filtros</Text>
                             </TouchableHighlight>
                         </View>

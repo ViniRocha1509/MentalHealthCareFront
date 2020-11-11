@@ -1,13 +1,12 @@
-import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
-
-import TapPsychologist from './tab_psychologist/app.tab.routes'
 import { TouchableHighlight, StyleSheet, View, Text } from 'react-native';
-import { useAuth } from '../context/auth';
-
+import React from 'react';
+import { useAuth } from '../../context/auth';
+import Profile from '../../pages/PatientNavigation/Profile'
+import Edit from '../../pages/PatientNavigation/Profile/edit'
+import { createStackNavigator } from '@react-navigation/stack';
 const AppStack = createStackNavigator();
 
-const PsychologistRoutes = () => {
+const ProfileStack = () => {
     const { signOut } = useAuth();
     return (
         <AppStack.Navigator screenOptions={{
@@ -18,21 +17,25 @@ const PsychologistRoutes = () => {
                     </TouchableHighlight>
                 </View>
             ),
-            title: 'Paciente',
+            title: 'Psicologos',
             headerStyle: {
                 backgroundColor: '#FC6663',
             },
             headerTintColor: '#fff',
             headerTitleStyle: {
                 fontWeight: 'bold',
-                alignSelf: 'center'
+                alignSelf: 'center',
+                marginLeft: 30
             }
         }}>
-            <AppStack.Screen name="TapPsychologist" component={TapPsychologist}
-            />
+            <AppStack.Screen name="Profile" component={Profile} options={{ title: 'Perfil', }} />
+            <AppStack.Screen name="Edit" component={Edit} options={{ title: 'Editar Perfil', }} />
         </AppStack.Navigator>
     );
 }
+
+export default ProfileStack;
+
 const styles = StyleSheet.create({
     linkText: {
         alignItems: 'flex-start',
@@ -47,5 +50,3 @@ const styles = StyleSheet.create({
         flex: 1,
     }
 });
-
-export default PsychologistRoutes;

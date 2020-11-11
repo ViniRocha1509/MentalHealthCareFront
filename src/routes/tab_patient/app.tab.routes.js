@@ -1,41 +1,13 @@
 import React from 'react';
-import AppRoute from '../app.routes';
-import Profile from '../../pages/PatientNavigation/Profile'
+import ListRoute from './list.routes';
+import ProfileRoute from './profile.routes'
+import MyScheduleRoute from './mySchedule.routes'
+import EmergencyRoute from './emergency.routes'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Feather';
-import { TouchableHighlight, StyleSheet, View, Text } from 'react-native';
-import { useAuth } from '../../context/auth';
-import { createStackNavigator } from '@react-navigation/stack';
+import { StyleSheet } from 'react-native';
 
 const Tab = createBottomTabNavigator();
-const AppStack = createStackNavigator();
-
-const ProfileStack = () => {
-    const { signOut } = useAuth();
-    return (
-        <AppStack.Navigator screenOptions={{
-            headerRight: () => (
-                <View style={styles.Anonymous}>
-                    <TouchableHighlight onPress={signOut}>
-                        <Text style={styles.linkText}>Sair</Text>
-                    </TouchableHighlight>
-                </View>
-            ),
-            title: 'Psicologos',
-            headerStyle: {
-                backgroundColor: '#FC6663',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-                fontWeight: 'bold',
-                alignSelf: 'center'
-            }
-        }}>
-            <AppStack.Screen name="Profile" component={Profile} options={{ title: 'Perfil', }} />
-        </AppStack.Navigator>
-    );
-}
-
 export default function TapPsychologist() {
     return (
         <Tab.Navigator
@@ -50,11 +22,11 @@ export default function TapPsychologist() {
                         case 'Perfil':
                             iconName = 'user';
                             break;
-                        case 'Post':
-                            iconName = 'edit';
+                        case 'Minhas Consultas':
+                            iconName = 'calendar';
                             break;
-                        case 'Notifications':
-                            iconName = 'bell';
+                        case 'Emergência':
+                            iconName = 'alert-circle';
                             break;
                         case 'Settings':
                             iconName = 'settings';
@@ -73,8 +45,10 @@ export default function TapPsychologist() {
                 showLabel: false,
             }}
         >
-            <Tab.Screen name="Lista Psicologo" component={AppRoute} />
-            <Tab.Screen name="Perfil" component={ProfileStack} />
+            <Tab.Screen name="Lista Psicologo" component={ListRoute} />
+            <Tab.Screen name="Minhas Consultas" component={MyScheduleRoute} />
+            <Tab.Screen name="Emergência" component={EmergencyRoute} />
+            <Tab.Screen name="Perfil" component={ProfileRoute} />
         </Tab.Navigator>
     );
 }

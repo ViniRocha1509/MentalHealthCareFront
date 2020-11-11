@@ -22,6 +22,9 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: '#F5F5F5'
     },
+    spinnerTextStyle: {
+        color: '#FFF'
+    },
     input: {
         paddingHorizontal: 20,
         paddingVertical: 15,

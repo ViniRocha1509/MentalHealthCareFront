@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Image,
     Text,
@@ -8,20 +8,34 @@ import {
 } from 'react-native';
 import styles from './styles'
 import { useAuth } from '../../context/auth';
+import Spinner from 'react-native-loading-spinner-overlay';
+import { set } from 'react-native-reanimated';
+import { showError } from '../../common';
 
 const SignIn = (props) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [spinner, setSpinner] = useState(false);
     const { signIn } = useAuth();
 
-    function handleSignIn() {
-        signIn({ email, password });
+    async function handleSignIn() {
+        try {
+            setSpinner(true);
+            await signIn({ email, password });
+        } catch (error) {
+            showError(error.message);
+        }
     }
 
     const { navigation } = props;
 
     return (
         <View style={styles.container}>
+            <Spinner
+                visible={spinner}
+                textContent={'Loading...'}
+                textStyle={styles.spinnerTextStyle}
+            />
             <View style={styles.containerInput}>
                 <Image source={require('../../../assets/images/logo_Mhc.png')} resizeMode="contain"
                     style={styles.image} />
@@ -35,7 +49,9 @@ const SignIn = (props) => {
                     autoCapitalize="none"
                     autoCorrect={false}
                     secureTextEntry />
-                <TouchableHighlight style={styles.touchButton} onPress={() => handleSignIn()}>
+                <TouchableHighlight style={styles.touchButton} onPress={() => {
+                    handleSignIn();
+                }}>
                     <Text style={styles.buttonText}>Entrar</Text>
                 </TouchableHighlight>
             </View>

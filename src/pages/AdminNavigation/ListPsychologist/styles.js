@@ -82,15 +82,6 @@ const styles = StyleSheet.create({
         marginLeft: 10
     },
 
-    rating: {
-        flexDirection: "column",
-        flex: 1,
-        margin: 10,
-        width: "100%",
-        alignItems: "center",
-        justifyContent: "center"
-    },
-
     containerButton: {
         flexDirection: "row",
         alignItems: 'center',
@@ -129,65 +120,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 1
     },
-    input: {
-        paddingHorizontal: 20,
-        width: "75%",
-        borderRadius: 5,
-        backgroundColor: '#FFF',
-        alignSelf: 'stretch',
-        marginBottom: 15,
-        fontSize: 16,
-    },
-    inputAdress: {
 
-    },
-    touchButton: {
-        padding: 20,
-        borderRadius: 5,
-        backgroundColor: '#FC6663',
-        alignSelf: 'stretch',
-        marginHorizontal: 20,
-    },
-
-    touchButtonCep: {
-        alignSelf: 'stretch',
-    },
-
-    buttonTextFilter: {
-        color: '#FFF',
-        fontWeight: 'bold',
-        fontSize: 16,
-        textAlign: 'center'
-    },
-
-    buttonTextCep: {
-        color: '#000',
-        fontWeight: 'bold',
-        fontSize: 16,
-        textAlign: 'center',
-        marginTop: 10
-    },
-
-    signUpLink: {
-        padding: 10,
-        marginTop: 20,
-    },
-    signUpLinkText: {
-        color: '#999',
-        fontWeight: 'bold',
-        fontSize: 16,
-        textAlign: 'center'
-    },
-
-    inputCep: {
-        flexDirection: 'row',
-        flex: 1,
-    },
-
-    inputSlider: {
-        alignItems: "center",
-        justifyContent: "center"
-    },
     spinnerTextStyle: {
         color: '#FFF'
     },

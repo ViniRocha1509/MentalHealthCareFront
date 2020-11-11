@@ -1,11 +1,11 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import ProfilePsychologist from '../pages/PatientNavigation/ProfilePsychologist';
-import ListPsychologist from '../pages/PatientNavigation/ListPsychologist';
+import ProfilePsychologist from '../../pages/PatientNavigation/ProfilePsychologist';
+import ListPsychologist from '../../pages/PatientNavigation/ListPsychologist';
 import { TouchableHighlight, StyleSheet, View, Text } from 'react-native';
-import { useAuth } from '../context/auth';
+import { useAuth } from '../../context/auth';
 
-import Schedule from '../pages/PatientNavigation/Schedule'
+import Schedule from '../../pages/PatientNavigation/Schedule'
 
 const AppStack = createStackNavigator();
 
@@ -27,7 +27,8 @@ const AppRoutes = () => {
             headerTintColor: '#fff',
             headerTitleStyle: {
                 fontWeight: 'bold',
-                alignSelf: 'center'
+                alignSelf: 'center',
+                marginLeft: 30
             }
         }}>
             <AppStack.Screen name="ListPsychologist" component={ListPsychologist}/>

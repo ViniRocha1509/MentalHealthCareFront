@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import api from '../services/api';
 import { showError } from '../common';
 import Reactotron from 'reactotron-react-native';
+import reactotron from 'reactotron-react-native';
 
 const AuthContextData = {};
 const AuthContext = createContext(AuthContextData);
@@ -23,7 +24,7 @@ export const AuthProvider = ({ children }) => {
                 api.defaults.headers.Authorization = `Bearer ${storagedToken}`;
                 setSigned(storagedSingned !== null ? JSON.parse(storagedSingned) : new Boolean());
                 setUser(JSON.parse(storagedUser));
-            }else{
+            } else {
                 setUser(initialUser);
             }
             setLoading(false);
@@ -31,20 +32,9 @@ export const AuthProvider = ({ children }) => {
         loadStoragedData();
     }, []);
 
-    // async function signIn() {
-    //     const response = await auth.signIn();
-
-    //     setUser(response.user)
-
-    //     api.defaults.headers['Authorization'] = `Bearer ${response.token}`;
-
-    //     await AsyncStorage.setItem('@RNAuth:user', JSON.stringify(response.user));
-    //     await AsyncStorage.setItem('@RNAuth:token', response.token);
-    // }
-
     async function signIn(login) {
         if (login.email.length === 0 || login.password.length === 0) {
-            showError("preencha os campos para prosseguir");
+            throw new Error('Preencha os campos para prosseguir');
         } else {
             try {
                 const response = await api.post('/authentication/login', {
@@ -58,10 +48,10 @@ export const AuthProvider = ({ children }) => {
 
                 api.defaults.headers['Authorization'] = `Bearer ${response.data.token}`;
                 setSigned(true);
-                await setUser(response.data.user);
+                setUser(response.data.user);
                 setLoading(false);
             } catch (_err) {
-                showError(_err.response.data);
+                throw new Error(_err.response.data);
             }
         }
     };
@@ -91,6 +81,7 @@ export const AuthProvider = ({ children }) => {
                 user,
                 psychologists
             });
+            Reactotron.log(response);
         } catch (_err) {
             throw new Error(_err);
         }

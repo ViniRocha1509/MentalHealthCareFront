@@ -96,7 +96,11 @@ const styles = StyleSheet.create({
     image: {
         width: 100,
         height: 120,
-        backgroundColor: "#FFF"
+        backgroundColor: "#FFF",
+        borderRadius: 5,
+    },
+    spinnerTextStyle: {
+        color: '#FFF'
     },
 });
 

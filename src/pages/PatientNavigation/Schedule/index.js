@@ -7,11 +7,13 @@ import { showError, showSucess } from '../../../common';
 
 import CalendarStrip from 'react-native-calendar-strip';
 import { FlatList } from 'react-native-gesture-handler';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 const Schedule = (props) => {
     const [day, setDay] = useState(0);
     const [month, setMonth] = useState(0);
     const [timeSchedule, setTimeSchedule] = useState([]);
+    const [spinner, setSpinner] = useState(false);
     const [psychologisId, setPsychologisId] = useState(props.route.params.psychologistId);
     const [hour, setHour] = useState(0);
     const workingHours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
@@ -41,7 +43,13 @@ const Schedule = (props) => {
                     onPress: () => console.log("Cancel Pressed"),
                     style: "cancelar"
                 },
-                { text: "Confirmar", onPress: createSchedule }
+                {
+                    text: "Confirmar",
+                    onPress: () => {
+                        setSpinner(true);
+                        createSchedule()
+                    }
+                }
             ],
             { cancelable: false }
         );
@@ -57,11 +65,12 @@ const Schedule = (props) => {
                     Hour: hour,
                     PsychologistId: psychologisId
                 });
-
                 showSucess(response.data);
                 props.navigation.navigate('ListPsychologist');
+                setSpinner(false);
             } catch (_err) {
                 showError(_err.response.data);
+                setSpinner(false);
             }
         }
     };
@@ -70,14 +79,15 @@ const Schedule = (props) => {
         var dateSchedule = new Date(date)
         setDay(dateSchedule.getDate());
         setMonth(dateSchedule.getMonth() + 1);
-
         try {
             if (date === undefined) return;
             const response = await api.get(`/Schedule/GetTimeByDate?Day=${dateSchedule.getDate()}&Month=${dateSchedule.getMonth() + 1}&PsychologistId=${psychologisId}`);
             const time = response.data;
             setTimeSchedule(time);
+            setSpinner(false);
         } catch (error) {
             showError(error.response.data);
+            setSpinner(false);
         }
     }
 
@@ -100,6 +110,11 @@ const Schedule = (props) => {
 
     return (
         <SafeAreaView style={styles.container}>
+            <Spinner
+                visible={spinner}
+                textContent={'Loading...'}
+                textStyle={styles.spinnerTextStyle}
+            />
             <CalendarStrip
                 calendarAnimation={{ type: 'sequence', duration: 30 }}
                 daySelectionAnimation={{ type: 'border', duration: 200, borderWidth: 1, borderHighlightColor: 'white' }}
@@ -112,7 +127,10 @@ const Schedule = (props) => {
                 highlightDateNameStyle={{ color: 'yellow' }}
                 disabledDateNameStyle={{ color: 'grey' }}
                 disabledDateNumberStyle={{ color: 'grey' }}
-                onDateSelected={(date) => { onSelectDate(date) }}
+                onDateSelected={(date) => {
+                    setSpinner(true);
+                    onSelectDate(date);
+                }}
                 minDate={Date.now()}
                 iconContainer={{ flex: 0.1 }}
             />

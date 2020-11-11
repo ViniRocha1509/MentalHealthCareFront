@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
 
     image: {
         width: 100,
-        height: 130,
+        height: 100,
         backgroundColor: "#FFF",
         borderRadius: 5
     },
@@ -32,39 +32,36 @@ const styles = StyleSheet.create({
         color: "#333"
     },
 
-    statusUnavailable: {
-        fontSize: 16,
-        color: "#ff4500",
-        marginTop: 5,
-        lineHeight: 24
-    },
-
     statusWaiting: {
         fontSize: 16,
         color: "#ff8c00",
         marginTop: 5,
-        lineHeight: 24
+        lineHeight: 24,
+        alignSelf: "center"
     },
 
     statusRefused: {
         fontSize: 16,
         color: "#dc143c",
         marginTop: 5,
-        lineHeight: 24
+        lineHeight: 24,
+        alignSelf: "center"
     },
 
     statusScheduled: {
         fontSize: 16,
         color: "#4169e1",
         marginTop: 5,
-        lineHeight: 24
+        lineHeight: 24,
+        alignSelf: "center"
     },
 
     statusCompleted: {
         fontSize: 16,
         color: "#2e8b57",
         marginTop: 5,
-        lineHeight: 24
+        lineHeight: 24,
+        alignSelf: "center"
     },
 
     containerButton: {
@@ -167,9 +164,71 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 16
     },
+    name: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#333"
+    },
+    crm: {
+        fontSize: 16,
+        color: "#999",
+        marginTop: 5,
+        lineHeight: 24
+    },
+    date: {
+        fontSize: 15,
+        color: "#999",
+        marginTop: 5,
+        lineHeight: 20
+    },
+
+    time: {
+        fontSize: 15,
+        color: "#999",
+        marginTop: 5,
+        lineHeight: 20,
+        marginLeft: 20
+    },
+    crmValue: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#333"
+    },
+
+    timeValue: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#333"
+    },
+    dateValue: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#333"
+    },
+    appointment: {
+        flex: 1,
+        flexDirection: "row",
+    },
+    adressValue: {
+        fontSize: 12,
+        fontWeight: "bold",
+        color: "#333"
+    },
+    adress: {
+        fontSize: 15,
+        color: "#999",
+        marginTop: 5,
+        lineHeight: 20
+    },
     spinnerTextStyle: {
         color: '#FFF'
     },
+    noResult: {
+        alignSelf: "center",
+        marginTop: "50%",
+        fontWeight: "bold",
+        fontSize: 16
+    }
 });
 
 export default styles;

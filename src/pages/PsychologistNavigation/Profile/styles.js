@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     crm: {
         fontSize: 16,
         color: "#999",
-        marginTop: 5,
+        marginTop: 3,
         lineHeight: 24
     },
 
@@ -69,10 +69,31 @@ const styles = StyleSheet.create({
         lineHeight: 20
     },
 
-    crmValue: {
+    statusValue: {
         fontSize: 16,
         fontWeight: "bold",
         color: "#333"
+    },
+
+    statusWaiting: {
+        fontSize: 16,
+        color: "#ff8c00",
+        lineHeight: 24,
+        fontWeight: "bold"
+    },
+
+    statusDisapproved: {
+        fontSize: 16,
+        color: "#dc143c",
+        lineHeight: 24,
+        fontWeight: "bold"
+    },
+
+    statusApproved: {
+        fontSize: 16,
+        color: "#2e8b57",
+        lineHeight: 24,
+        fontWeight: "bold"
     },
 
     specialityValue: {
@@ -95,8 +116,12 @@ const styles = StyleSheet.create({
 
     image: {
         width: 100,
-        height: 120,
-        backgroundColor: "#FFF"
+        height: 140,
+        backgroundColor: "#FFF",
+        borderRadius: 5,
+    },
+    spinnerTextStyle: {
+        color: '#FFF'
     },
 });
 

@@ -67,6 +67,9 @@ const styles = StyleSheet.create({
         fontSize: 16,
         textAlign: 'center'
     },
+    spinnerTextStyle: {
+        color: '#FFF'
+    },
 });
 
 export default styles;

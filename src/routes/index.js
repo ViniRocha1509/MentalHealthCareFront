@@ -3,9 +3,9 @@ import React from 'react';
 import { useAuth } from '../context/auth';
 
 import AuthRoutes from './auth.routes';
-import AppRoutes from './app.routes';
-import TabAppRoutes from './tab_patient/app.tab.routes';
-import PsychologistRoutes from './psychologist.routes';
+import AdminRoutes from './route_admin/admin.routes';
+import TabPatient from './tab_patient/app.tab.routes';
+import TabPsychologist from './tab_psychologist/app.tab.routes';
 import { ActivityIndicator, View } from 'react-native';
 
 const Routes = () => {
@@ -20,9 +20,11 @@ const Routes = () => {
     }
     if (signed) {
         if (user.typeUser == 1)
-            return <PsychologistRoutes />
+            return <TabPsychologist />
         else if (user.typeUser == 2)
-            return <TabAppRoutes />
+            return <TabPatient />
+        else if (user.typeUser == 3)
+            return <AdminRoutes />
         else return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator size="large" color="#666" />

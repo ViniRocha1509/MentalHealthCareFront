@@ -19,6 +19,18 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 class ScheduleList extends React.Component {
+    componentDidMount() {
+        this._unsubscribe = this.props.navigation.addListener('focus', () => {
+            if (this.state.docs.length > 0) {
+                this.setState({ isfilter: true, docs: [] });
+            }
+            this.loadScheduleList(this.initialFilter);
+        });
+    }
+
+    componentWillUnmount() {
+        this._unsubscribe();
+    }
     state = {
         docs: [],
         scheduleInfo: {},
@@ -37,19 +49,6 @@ class ScheduleList extends React.Component {
         day: 0,
     }
 
-    componentDidMount() {
-        this._unsubscribe = this.props.navigation.addListener('focus', () => {
-            if (this.state.docs.length > 0) {
-                this.setState({ isfilter: true, docs: [] });
-            }
-            this.loadScheduleList(this.initialFilter);
-        });
-    }
-
-    componentWillUnmount() {
-        this._unsubscribe();
-    }
-
 
     RefuseAlert = (id) =>
         Alert.alert(
@@ -61,55 +60,11 @@ class ScheduleList extends React.Component {
                     onPress: () => { },
                     style: "cancelar"
                 },
-                {
-                    text: "Confirmar", onPress: () => {
-                        this.setState({ spinner: true });
-                        this.cancelSchedule(id);
-                    },
-                }
+                { text: "Confirmar", onPress: () => { this.cancelSchedule(id) }, }
             ],
             { cancelable: false }
         );
 
-    ConfirmAlert = (id) =>
-        Alert.alert(
-            "Deseja realmente confirmar este agendamento? ",
-            '',
-            [
-                {
-                    text: "Cancelar",
-                    onPress: () => { },
-                    style: "cancelar"
-                },
-                {
-                    text: "Confirmar", onPress: () => {
-                        this.setState({ spinner: true });
-                        this.confirmSchedule(id);
-                    },
-                }
-            ],
-            { cancelable: false }
-        );
-
-    completeAlert = (id) =>
-        Alert.alert(
-            "Deseja realmente completar este agendamento? ",
-            '',
-            [
-                {
-                    text: "Cancelar",
-                    onPress: () => { },
-                    style: "cancelar"
-                },
-                {
-                    text: "Confirmar", onPress: () => {
-                        this.setState({ spinner: true });
-                        this.completeSchedule(id);
-                    },
-                }
-            ],
-            { cancelable: false }
-        );
 
     loadScheduleList = async (filters) => {
         try {
@@ -118,9 +73,9 @@ class ScheduleList extends React.Component {
                 filter.page = 1
             let config = { params: { ...filter } };
 
-            const response = await api.get(`/psychologist/CheckAppointment?`, config);
+            const response = await api.get(`/patient/CheckAppointment?`, config);
             const { docs, ...scheduleInfo } = response.data;
-            this.setState({ docs: [...this.state.docs, ...docs], filter, scheduleInfo, withResult: docs.length > 0, spinner: false })
+            this.setState({ docs: [...this.state.docs, ...docs], scheduleInfo, filter, withResult: docs.length > 0, spinner: false })
         } catch (error) {
             this.setState({ spinner: false });
             showError(error.response.data);
@@ -133,37 +88,9 @@ class ScheduleList extends React.Component {
             this.setState({ isfilter: true, docs: [] });
             this.loadScheduleList(this.initialFilter);
             showSucess(response.data);
-            this.setState({ spinner: false });
-        } catch (error) {
-            showError(error.response.data);
-            this.setState({ spinner: false });
-        }
-    }
-
-    confirmSchedule = async (id) => {
-        try {
-            const response = await api.put(`/Schedule/ConfirmSchedule/${id}`);
-            this.setState({ isfilter: true, docs: [] });
-            this.loadScheduleList(this.initialFilter);
-            showSucess(response.data);
-            this.setState({ spinner: false });
-        } catch (error) {
-            showError(error.response.data);
-            this.setState({ spinner: false });
-        }
-    }
-
-    completeSchedule = async (id) => {
-        try {
-            const response = await api.put(`/Schedule/CompleteSchedule/${id}`);
-            this.setState({ isfilter: true, docs: [] });
-            this.loadScheduleList(this.initialFilter);
-            showSucess(response.data);
-            this.setState({ spinner: false });
 
         } catch (error) {
             showError(error.response.data);
-            this.setState({ spinner: false });
         }
     }
 
@@ -199,55 +126,51 @@ class ScheduleList extends React.Component {
             <View style={styles.listContainer}>
                 <View style={styles.paramsSchedule}>
                     {
-                        !item.patient.image ?
+                        !item.psychologist.user.image ?
                             <Image source={require('../../../../assets/images/padrao.jpg')}
                                 style={styles.image} />
                             :
                             <Image
                                 style={styles.image}
                                 source={{
-                                    uri: item.patient.image,
+                                    uri: item.psychologist.user.image,
                                 }}
                             />
                     }
                     <View style={styles.paramsScheduleColum}>
-                        <Text style={styles.schedule}>Data: {dateSchedule.getDate()}/{dateSchedule.getMonth() + 1}/{dateSchedule.getFullYear()}</Text>
-                        <Text style={styles.schedule}>Horário: {dateSchedule.getHours()}:00</Text>
-                        <Text style={item.status == 1 ? styles.statusCompleted : item.status == 2 ? styles.statusRefused :
-                            item.status == 3 ? styles.statusScheduled : item.status == 4 ? styles.statusUnavailable :
-                                styles.statusWaiting}>Status: {item.statusDescription}</Text>
-                        {item.patient != null ?
-                            <Text style={styles.patientValue}>Paciente: {item.patient.name + " " + item.patient.lastName}</Text>
+                        {item.psychologist != null ?
+                            <View>
+                                <Text style={styles.name}>{item.psychologist.user.name + " " + item.psychologist.user.lastName}</Text>
+                                <Text style={styles.crm}>CRM:</Text>
+                                <Text style={styles.crmValue}>{item.psychologist.crm}</Text>
+                            </View>
                             :
                             <Text />
                         }
                     </View>
                 </View>
+                <Text style={styles.adress}>Localização: </Text>
+                <Text style={styles.adressValue}>{`${item.psychologist.street},${item.psychologist.number} - ${item.psychologist.district}, ${item.psychologist.city} - ${item.psychologist.state}`}</Text>
+                <View style={styles.appointment}>
+                    <Text style={styles.date}>Data: <Text style={styles.dateValue}>{dateSchedule.getDate()}/{dateSchedule.getMonth() + 1}/{dateSchedule.getFullYear()}</Text></Text>
+                    <Text style={styles.time}>Horário: <Text style={styles.timeValue}>{dateSchedule.getHours()}:00</Text></Text>
+                </View>
+                <Text style={item.status == 1 ? styles.statusCompleted : item.status == 2 ? styles.statusRefused :
+                    styles.statusScheduled}>Status: {item.statusDescription}</Text>
                 {
-                    item.status == 5 ?
+                    item.status == 1 && item.isRating === false ?
                         <View style={styles.containerButton}>
-                            <TouchableHighlight style={styles.buttonList} onPress={() => { this.ConfirmAlert(item.id) }}>
-                                <Text style={styles.buttonText}>Agendar</Text>
-                            </TouchableHighlight>
-                            <TouchableHighlight style={styles.buttonList} onPress={() => { this.RefuseAlert(item.id) }}>
-                                <Text style={styles.buttonText}>Recusar</Text>
+                            <TouchableHighlight style={styles.buttonList} onPress={() => {
+                                this.props.navigation.navigate('Rates', {
+                                    psychologistId: item.psychologistId,
+                                    scheduleId: item.id
+                                });
+                            }}>
+                                <Text style={styles.buttonText}>Avaliar</Text>
                             </TouchableHighlight>
                         </View>
                         :
-                        item.status == 4 ?
-                            <View style={styles.containerButton}>
-                                <TouchableHighlight style={styles.buttonList} onPress={() => { this.RefuseAlert(item.id) }}>
-                                    <Text style={styles.buttonText}>Disponibilizar</Text>
-                                </TouchableHighlight>
-                            </View>
-                            : item.status == 3 && new Date() > dateSchedule ?
-                                <View style={styles.containerButton}>
-                                    <TouchableHighlight style={styles.buttonList} onPress={() => { this.completeAlert(item.id) }}>
-                                        <Text style={styles.buttonText}>Finalizar</Text>
-                                    </TouchableHighlight>
-                                </View>
-                                :
-                                <View />
+                        <View />
                 }
             </View>
         )
