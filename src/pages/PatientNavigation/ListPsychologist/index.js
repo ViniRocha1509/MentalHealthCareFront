@@ -7,9 +7,11 @@ import styles from './styles';
 import { FloatingAction } from "react-native-floating-action";
 import Slider from '@react-native-community/slider';
 import axios from 'axios';
-import Reactotron from 'reactotron-react-native';
 import DropDownPicker from 'react-native-dropdown-picker'
 import Spinner from 'react-native-loading-spinner-overlay';
+import firestore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-community/async-storage';
+import reactotron from 'reactotron-react-native';
 
 class ListPsychologist extends React.Component {
     state = {
@@ -20,7 +22,9 @@ class ListPsychologist extends React.Component {
         isfilter: true,
         isCepSet: false,
         spinner: false,
-        withResult: true
+        withResult: true,
+        threads: [],
+        loadSpinner: true,
     }
 
     initialFilter = {
@@ -37,16 +41,89 @@ class ListPsychologist extends React.Component {
 
     componentDidMount() {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
-            if (this.state.docs.length > 0) {
-                this.setState({ isfilter: true, docs: [] });
-            }
-
+            this.setState({ isfilter: true, docs: [] });
             this.loadPsychologist(this.initialFilter);
         });
     }
 
     componentWillUnmount() {
         this._unsubscribe();
+    }
+
+    isEmpty(obj) {
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop))
+                return false;
+        }
+        return true;
+    }
+
+    handleButtonPress = async (psychologist) => {
+        var isExist = false;
+        var existUser = firestore().collection("MESSAGE_THREADS");
+        var chat = {};
+        await existUser.where("sender", "==", psychologist.user.id).get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    if (doc.data().sender == psychologist.user.id) {
+                        isExist = true;
+                        chat = {
+                            _id: doc.id,
+                            name: '',
+                            latestMessage: { text: '' },
+                            ...doc.data()
+                        }
+                    }
+                });
+            });
+
+        if (isExist == false) {
+            var user = await AsyncStorage.getItem('@MHC:user');
+            let userLoged = JSON.parse(user);
+            if (this.isEmpty(psychologist) == false) {
+                // create new thread using firebase & firestore
+                firestore()
+                    .collection('MESSAGE_THREADS')
+                    .add({
+                        name: psychologist.user.name + " " + psychologist.user.lastName,
+                        nameUser: userLoged.name + " " + userLoged.lastName,
+                        recipient: userLoged.id,
+                        sender: psychologist.user.id,
+                        patientUser: userLoged.id,
+                        latestMessage: {
+                            text: `${psychologist.user.name} created. Welcome!`,
+                            createdAt: new Date().getTime()
+                        }
+                    })
+                    .then(docRef => {
+                        docRef.collection('MESSAGES').add({
+                            text: `${psychologist.user.name} created. Welcome!`,
+                            createdAt: new Date().getTime(),
+                            system: true
+                        })
+                    });
+
+                var chatCreated = firestore().collection("MESSAGE_THREADS");
+                var newChat = {};
+                await chatCreated.where("sender", "==", psychologist.user.id).get()
+                    .then(function (querySnapshot) {
+                        querySnapshot.forEach(function (doc) {
+                            if (doc.data().sender == psychologist.user.id) {
+                                isExist = true;
+                                newChat = {
+                                    _id: doc.id,
+                                    name: '',
+                                    latestMessage: { text: '' },
+                                    ...doc.data()
+                                }
+                            }
+                        });
+                    });
+                this.props.navigation.navigate('Messages', { thread: newChat })
+            }
+        } else {
+            this.props.navigation.navigate('Messages', { thread: chat })
+        }
     }
 
     renderItem = ({ item }) => (
@@ -90,7 +167,7 @@ class ListPsychologist extends React.Component {
                 }}>
                     <Text style={styles.buttonText}>Agendar</Text>
                 </TouchableHighlight>
-                <TouchableHighlight style={styles.buttonList} onPress={() => { }}>
+                <TouchableHighlight style={styles.buttonList} onPress={() => { this.handleButtonPress(item) }}>
                     <Text style={styles.buttonText}>Mensagem</Text>
                 </TouchableHighlight>
                 <TouchableHighlight style={styles.buttonList} onPress={() => {
@@ -222,7 +299,7 @@ class ListPsychologist extends React.Component {
     }
 
     clearFilter = () => {
-        this.setState({ isfilter: true, docs: [], isCepSet: false,  withResult: true });
+        this.setState({ isfilter: true, docs: [], isCepSet: false, withResult: true });
         this.loadPsychologist(this.initialFilter);
     }
 
@@ -396,7 +473,7 @@ class ListPsychologist extends React.Component {
                     <FloatingAction
                         actions={actionsClose}
                         color="#FC6663"
-                        overrideWithAction={true}
+                        overrideWithAction={this.state.loadSpinner}
                         onPressItem={this.closeFilter}
                     />
                 </SafeAreaView >

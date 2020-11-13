@@ -102,6 +102,19 @@ const styles = StyleSheet.create({
     spinnerTextStyle: {
         color: '#FFF'
     },
+    avaliationLink: {
+        marginTop: 20,
+        padding: 20,
+        borderRadius: 5,
+        backgroundColor: '#FC6663',
+        alignSelf: 'stretch',
+    },
+    avaliationLinkText: {
+        color: '#FFF',
+        fontWeight: 'bold',
+        fontSize: 14,
+        textAlign: 'center'
+    },
 });
 
 export default styles;

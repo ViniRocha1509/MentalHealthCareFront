@@ -3,6 +3,7 @@ import ListRoute from './list.routes';
 import ProfileRoute from './profile.routes'
 import MyScheduleRoute from './mySchedule.routes'
 import EmergencyRoute from './emergency.routes'
+import Chat from '../chat_route/chat.routes'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Feather';
 import { StyleSheet } from 'react-native';
@@ -28,8 +29,8 @@ export default function TapPsychologist() {
                         case 'Emergência':
                             iconName = 'alert-circle';
                             break;
-                        case 'Settings':
-                            iconName = 'settings';
+                        case 'Chat':
+                            iconName = 'message-circle';
                             break;
                         default:
                             iconName = 'circle';
@@ -48,6 +49,7 @@ export default function TapPsychologist() {
             <Tab.Screen name="Lista Psicologo" component={ListRoute} />
             <Tab.Screen name="Minhas Consultas" component={MyScheduleRoute} />
             <Tab.Screen name="Emergência" component={EmergencyRoute} />
+            <Tab.Screen name="Chat" component={Chat} />
             <Tab.Screen name="Perfil" component={ProfileRoute} />
         </Tab.Navigator>
     );

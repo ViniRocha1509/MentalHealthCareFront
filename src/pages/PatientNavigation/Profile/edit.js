@@ -31,7 +31,6 @@ class Edit extends React.Component {
         cpf: this.props.route.params.user.cpf ?? '',
         user: this.props.route.params.user,
         spinner: false
-
     }
 
     addPhoto = () => {

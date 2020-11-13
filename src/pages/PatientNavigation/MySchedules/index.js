@@ -21,9 +21,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 class ScheduleList extends React.Component {
     componentDidMount() {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
-            if (this.state.docs.length > 0) {
-                this.setState({ isfilter: true, docs: [] });
-            }
+            this.setState({ isfilter: true, docs: [] });
             this.loadScheduleList(this.initialFilter);
         });
     }
@@ -44,11 +42,11 @@ class ScheduleList extends React.Component {
 
     initialFilter = {
         status: null,
+        page: 1,
         month: 0,
         hour: 0,
         day: 0,
     }
-
 
     RefuseAlert = (id) =>
         Alert.alert(
@@ -84,11 +82,10 @@ class ScheduleList extends React.Component {
 
     cancelSchedule = async (id) => {
         try {
-            const response = await api.delete(`/Schedule/CancelSchedule/${id}`);
+            const response = await api.put(`/Schedule/RefusedSchedule/${id}`);
             this.setState({ isfilter: true, docs: [] });
             this.loadScheduleList(this.initialFilter);
             showSucess(response.data);
-
         } catch (error) {
             showError(error.response.data);
         }
@@ -152,11 +149,21 @@ class ScheduleList extends React.Component {
                 <Text style={styles.adress}>Localização: </Text>
                 <Text style={styles.adressValue}>{`${item.psychologist.street},${item.psychologist.number} - ${item.psychologist.district}, ${item.psychologist.city} - ${item.psychologist.state}`}</Text>
                 <View style={styles.appointment}>
-                    <Text style={styles.date}>Data: <Text style={styles.dateValue}>{dateSchedule.getDate()}/{dateSchedule.getMonth() + 1}/{dateSchedule.getFullYear()}</Text></Text>
-                    <Text style={styles.time}>Horário: <Text style={styles.timeValue}>{dateSchedule.getHours()}:00</Text></Text>
+                    <Text style={styles.date}>Data: <Text style={styles.dateValue}>{dateSchedule.getUTCDate()}/{dateSchedule.getUTCMonth() + 1}/{dateSchedule.getFullYear()}</Text></Text>
+                    <Text style={styles.time}>Horário: <Text style={styles.timeValue}>{dateSchedule.getUTCHours()}:00</Text></Text>
                 </View>
                 <Text style={item.status == 1 ? styles.statusCompleted : item.status == 2 ? styles.statusRefused :
                     styles.statusScheduled}>Status: {item.statusDescription}</Text>
+                {
+                    item.status == 5 ?
+                        <View style={styles.containerButton}>
+                            <TouchableHighlight style={styles.buttonList} onPress={() => { this.RefuseAlert(item.id) }}>
+                                <Text style={styles.buttonText}>Cancelar</Text>
+                            </TouchableHighlight>
+                        </View>
+                        :
+                        <View />
+                }
                 {
                     item.status == 1 && item.isRating === false ?
                         <View style={styles.containerButton}>

@@ -1,16 +1,12 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import ProfilePsychologist from '../../pages/PatientNavigation/ProfilePsychologist';
-import ListPsychologist from '../../pages/PatientNavigation/ListPsychologist';
 import { TouchableHighlight, StyleSheet, View, Text } from 'react-native';
 import { useAuth } from '../../context/auth';
-import Messages from '../../pages/Chat/Messages';
-import Avaliation from '../../pages/PatientNavigation/PsychologistAvaliations';
-import Schedule from '../../pages/PatientNavigation/Schedule'
+import Schedule from '../../pages/PsychologistNavigation/Schedule';
 
 const AppStack = createStackNavigator();
 
-const AppRoutes = () => {
+const UnavailableSchedule = () => {
     const { signOut } = useAuth();
     return (
         <AppStack.Navigator screenOptions={{
@@ -21,7 +17,7 @@ const AppRoutes = () => {
                     </TouchableHighlight>
                 </View>
             ),
-            title: 'Psicologos',
+            title: 'Paciente',
             headerStyle: {
                 backgroundColor: '#FC6663',
             },
@@ -32,12 +28,7 @@ const AppRoutes = () => {
                 marginLeft: 30
             }
         }}>
-            <AppStack.Screen name="ListPsychologist" component={ListPsychologist}/>
-            <AppStack.Screen name="Schedule" component={Schedule} options={{  title: 'Agendamento', }} />
-            <AppStack.Screen name="ProfilePsychologist" component={ProfilePsychologist} options={{  title: 'Perfil', }} />
-            <AppStack.Screen name="Avaliation" component={Avaliation} options={{ title: 'Avaliações', }} />
-            <AppStack.Screen name="Messages" component={Messages} options={({ route }) => ({ title: route.params.thread.name, })} />
-            
+            <AppStack.Screen name="Schedule" component={Schedule} options={{ title: 'Horários', }} />
         </AppStack.Navigator>
     );
 }
@@ -56,4 +47,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default AppRoutes;
+export default UnavailableSchedule;

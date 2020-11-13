@@ -32,6 +32,7 @@ const SignUp = (props) => {
     const { navigation } = props;
     const [type, setType] = useState(1);
     const [crm, setCrm] = useState('');
+    const [phone, setPhone] = useState('');
     const [specialtyJson, setSpecialtyJson] = useState([]);
     const [cep, setCep] = useState('');
     const [state, setState] = useState('');
@@ -165,6 +166,11 @@ const SignUp = (props) => {
                             < TextInput placeholder='CRM' value={crm}
                                 style={styles.input} onChangeText={value => setCrm(value)}
                                 autoCapitalize="none"
+                                autoCorrect={false} />
+                            < TextInput placeholder='Informe o número do consultório' value={phone}
+                                style={styles.input} onChangeText={value => setPhone(value)}
+                                autoCapitalize="none"
+                                keyboardType="numeric"
                                 autoCorrect={false} />
                             <View style={styles.inputCep}>
                                 <TextInput placeholder='CEP' value={cep}

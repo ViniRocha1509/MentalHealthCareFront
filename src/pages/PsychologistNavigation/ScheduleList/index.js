@@ -33,21 +33,53 @@ class ScheduleList extends React.Component {
     initialFilter = {
         status: null,
         month: 0,
+        page: 1,
         hour: 0,
         day: 0,
     }
 
     componentDidMount() {
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
-            if (this.state.docs.length > 0) {
-                this.setState({ isfilter: true, docs: [] });
-            }
+            this.setState({ isfilter: true, docs: [] });
             this.loadScheduleList(this.initialFilter);
         });
     }
 
     componentWillUnmount() {
         this._unsubscribe();
+    }
+
+    ProvideAlert = (id) =>
+        Alert.alert(
+            "Deseja realmente disponibilizar este agendamento? ",
+            '',
+            [
+                {
+                    text: "Cancelar",
+                    onPress: () => { },
+                    style: "cancelar"
+                },
+                {
+                    text: "Confirmar", onPress: () => {
+                        this.setState({ spinner: true });
+                        this.provideSchedule(id);
+                    },
+                }
+            ],
+            { cancelable: false }
+        );
+
+    provideSchedule = async (id) => {
+        try {
+            const response = await api.delete(`/Schedule/CancelSchedule/${id}`);
+            this.setState({ isfilter: true, docs: [] });
+            this.loadScheduleList(this.initialFilter);
+            showSucess(response.data);
+            this.setState({ spinner: false });
+        } catch (error) {
+            showError(error.response.data);
+            this.setState({ spinner: false });
+        }
     }
 
 
@@ -129,7 +161,7 @@ class ScheduleList extends React.Component {
 
     cancelSchedule = async (id) => {
         try {
-            const response = await api.delete(`/Schedule/CancelSchedule/${id}`);
+            const response = await api.put(`/Schedule/RefusedSchedule/${id}`);
             this.setState({ isfilter: true, docs: [] });
             this.loadScheduleList(this.initialFilter);
             showSucess(response.data);
@@ -199,20 +231,25 @@ class ScheduleList extends React.Component {
             <View style={styles.listContainer}>
                 <View style={styles.paramsSchedule}>
                     {
-                        !item.patient.image ?
+                        item.patientId != 0 ?
+                            !item.patient.image ?
+                                <Image source={require('../../../../assets/images/padrao.jpg')}
+                                    style={styles.image} />
+                                :
+                                <Image
+                                    style={styles.image}
+                                    source={{
+                                        uri: item.patient.image,
+                                    }}
+                                />
+                            :
                             <Image source={require('../../../../assets/images/padrao.jpg')}
                                 style={styles.image} />
-                            :
-                            <Image
-                                style={styles.image}
-                                source={{
-                                    uri: item.patient.image,
-                                }}
-                            />
+
                     }
                     <View style={styles.paramsScheduleColum}>
-                        <Text style={styles.schedule}>Data: {dateSchedule.getDate()}/{dateSchedule.getMonth() + 1}/{dateSchedule.getFullYear()}</Text>
-                        <Text style={styles.schedule}>Horário: {dateSchedule.getHours()}:00</Text>
+                        <Text style={styles.schedule}>Data: {dateSchedule.getUTCDate()}/{dateSchedule.getUTCMonth() + 1}/{dateSchedule.getFullYear()}</Text>
+                        <Text style={styles.schedule}>Horário: {dateSchedule.getUTCHours()}:00</Text>
                         <Text style={item.status == 1 ? styles.statusCompleted : item.status == 2 ? styles.statusRefused :
                             item.status == 3 ? styles.statusScheduled : item.status == 4 ? styles.statusUnavailable :
                                 styles.statusWaiting}>Status: {item.statusDescription}</Text>
@@ -236,7 +273,7 @@ class ScheduleList extends React.Component {
                         :
                         item.status == 4 ?
                             <View style={styles.containerButton}>
-                                <TouchableHighlight style={styles.buttonList} onPress={() => { this.RefuseAlert(item.id) }}>
+                                <TouchableHighlight style={styles.buttonList} onPress={() => { this.ProvideAlert(item.id) }}>
                                     <Text style={styles.buttonText}>Disponibilizar</Text>
                                 </TouchableHighlight>
                             </View>

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Image, SafeAreaView, Text, View, ScrollView } from 'react-native';
+import { Image, SafeAreaView, Text, View, ScrollView, TouchableHighlight } from 'react-native';
 import styles from './styles';
 import Reactotron from 'reactotron-react-native';
 import { showError } from '../../../common';
@@ -85,6 +85,11 @@ class Profile extends React.Component {
               <Text style={styles.descriptionValue}>{this.state.profile.description ?? "Psicologo não possui uma descrição"}</Text>
               <Text style={styles.description}>Plano: </Text>
               <Text style={styles.descriptionValue}>{this.state.profile.amount ?? "Psicologo não possui um plano"}</Text>
+              <TouchableHighlight style={styles.avaliationLink} onPress={() => {
+                this.props.navigation.navigate("Avaliation", { psychologistId: this.state.profile.id })
+              }}>
+                <Text style={styles.avaliationLinkText}>Ver avaliações</Text>
+              </TouchableHighlight>
             </View>
           </ScrollView>
         </SafeAreaView>

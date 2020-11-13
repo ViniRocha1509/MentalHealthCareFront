@@ -1,8 +1,11 @@
 import React from 'react';
 import ProfileRoute from './profile.routes'
 import ScheduleRoute from './schedule.routes'
+import AvaliationRoute from './avaliation.routes'
+import Unavailable from './unavailableSchedule.routes'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Feather';
+import Chat from '../chat_route/chat.routes'
 
 const Tab = createBottomTabNavigator();
 
@@ -20,14 +23,14 @@ export default function TapPsychologist() {
                         case 'Perfil':
                             iconName = 'user';
                             break;
-                        case 'Post':
-                            iconName = 'edit';
+                        case 'Chat':
+                            iconName = 'message-circle';
                             break;
-                        case 'Notifications':
-                            iconName = 'bell';
+                        case 'Avaliação':
+                            iconName = 'star';
                             break;
-                        case 'Settings':
-                            iconName = 'settings';
+                        case 'Indiponibilizar':
+                            iconName = 'slash';
                             break;
                         default:
                             iconName = 'circle';
@@ -44,6 +47,9 @@ export default function TapPsychologist() {
             }}
         >
             <Tab.Screen name="Agenda" component={ScheduleRoute} />
+            <Tab.Screen name="Indiponibilizar" component={Unavailable} />
+            <Tab.Screen name="Chat" component={Chat} />
+            <Tab.Screen name="Avaliação" component={AvaliationRoute} />
             <Tab.Screen name="Perfil" component={ProfileRoute} />
         </Tab.Navigator>
     );

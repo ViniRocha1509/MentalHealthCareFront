@@ -25,12 +25,12 @@ class Profile extends React.Component {
   }
 
   isEmpty(obj) {
-    for(var prop in obj) {
-        if(obj.hasOwnProperty(prop))
-            return false;
+    for (var prop in obj) {
+      if (obj.hasOwnProperty(prop))
+        return false;
     }
     return true;
-}
+  }
 
   loadPatient = async () => {
     try {
@@ -54,7 +54,7 @@ class Profile extends React.Component {
       },
     ];
     return (
-      this.isEmpty(this.state.user) == false?
+      this.isEmpty(this.state.user) == false ?
         <SafeAreaView style={styles.container}>
           <ScrollView style={styles.scrollview}>
             <View style={styles.paramsUser}>

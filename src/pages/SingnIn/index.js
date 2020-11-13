@@ -23,6 +23,7 @@ const SignIn = (props) => {
             setSpinner(true);
             await signIn({ email, password });
         } catch (error) {
+            setSpinner(false);
             showError(error.message);
         }
     }
