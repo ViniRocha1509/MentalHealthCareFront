@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { GiftedChat } from 'react-native-gifted-chat'
 import firestore from '@react-native-firebase/firestore'
-import auth from '@react-native-firebase/auth';
-import AsyncStorage from '@react-native-community/async-storage';
 import { View } from 'react-native';
 import Reactotron from 'reactotron-react-native';
 import { useAuth } from '../../context/auth';
@@ -10,6 +8,7 @@ import { useAuth } from '../../context/auth';
 export default function Messages({ route }) {
     const { thread } = route.params
     const { user } = useAuth();
+
 
     useEffect(() => {
 
@@ -37,15 +36,54 @@ export default function Messages({ route }) {
                     }
 
                     return data
-                })
+                });
+
+                firestore()
+                    .collection('MESSAGE_THREADS')
+                    .doc(thread._id)
+                    .onSnapshot(querySnapshot => {
+                        const count = (!querySnapshot || !querySnapshot._data) ? 0 : user.typeUser === 1 ? querySnapshot._data.countPatientMessages : querySnapshot._data.countPsychologistMessages ;
+                        if (countMessages == 0)
+                            setCountMessages(count ?? 0);
+                    });
 
                 setMessages(messages)
-            })
+            });
+
+        setVisible();
 
         return () => unsubscribeListener()
     }, [])
 
-    const [messages, setMessages] = useState([])
+    const [messages, setMessages] = useState([]);
+    const [countMessages, setCountMessages] = useState(0);
+
+
+    async function setVisible() {
+        if (user.typeUser === 1 && !thread._id == false) {
+            await firestore()
+                .collection('MESSAGE_THREADS')
+                .doc(thread._id)
+                .set(
+                    {
+                        countPsychologistMessages: 0,
+                        psychologistShow: false,
+                    },
+                    { merge: true }
+                );
+        } else if (user.typeUser === 2 && !thread._id == false) {
+            await firestore()
+                .collection('MESSAGE_THREADS')
+                .doc(thread._id)
+                .set(
+                    {
+                        countPatientMessages: 0,
+                        patientShow: false,
+                    },
+                    { merge: true }
+                );
+        }
+    }
 
     async function handleSend(newMessage = []) {
         const text = newMessage[0].text;
@@ -61,7 +99,6 @@ export default function Messages({ route }) {
                     displayName: user.name
                 }
             });
-
         await firestore()
             .collection('MESSAGE_THREADS')
             .doc(thread._id)
@@ -70,11 +107,15 @@ export default function Messages({ route }) {
                     latestMessage: {
                         text,
                         createdAt: new Date().getTime()
-                    }
+                    },
+                    psychologistShow: user.typeUser === 1 ? false : true,
+                    patientShow: user.typeUser === 2 ? false : true,
+                    countPatientMessages: user.typeUser === 1 ? countMessages + 1 : 0,
+                    countPsychologistMessages: user.typeUser === 2 ? (countMessages + 1) : 0 
                 },
                 { merge: true }
             );
-
+        setCountMessages(countMessages + 1);
         setMessages(GiftedChat.append(messages, newMessage))
     }
 

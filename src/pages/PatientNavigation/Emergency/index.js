@@ -4,6 +4,8 @@ import { Rating } from 'react-native-ratings';
 import { showError } from '../../../common';
 import api from '../../../services/api';
 import styles from './styles';
+import firestore from '@react-native-firebase/firestore';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -35,6 +37,75 @@ class ListEmergency extends React.Component {
 
     componentWillUnmount() {
         this._unsubscribe();
+    }
+
+    handleButtonPress = async (psychologist) => {
+        var isExist = false;
+        var existUser = firestore().collection("MESSAGE_THREADS");
+        var chat = {};
+        await existUser.where("sender", "==", psychologist.user.id).get()
+            .then(function (querySnapshot) {
+                querySnapshot.forEach(function (doc) {
+                    if (doc.data().sender == psychologist.user.id) {
+                        isExist = true;
+                        chat = {
+                            _id: doc.id,
+                            name: '',
+                            latestMessage: { text: '' },
+                            ...doc.data()
+                        }
+                    }
+                });
+            });
+
+        if (isExist == false) {
+            var user = await AsyncStorage.getItem('@MHC:user');
+            let userLoged = JSON.parse(user);
+            if (this.isEmpty(psychologist) == false) {
+                // create new thread using firebase & firestore
+                firestore()
+                    .collection('MESSAGE_THREADS')
+                    .add({
+                        name: psychologist.user.name + " " + psychologist.user.lastName,
+                        nameUser: userLoged.name + " " + userLoged.lastName,
+                        emergency: true,
+                        recipient: userLoged.id,
+                        sender: psychologist.user.id,
+                        patientUser: userLoged.id,
+                        latestMessage: {
+                            text: `${psychologist.user.name} created. Welcome!`,
+                            createdAt: new Date().getTime()
+                        }
+                    })
+                    .then(docRef => {
+                        docRef.collection('MESSAGES').add({
+                            text: `${psychologist.user.name} created. Welcome!`,
+                            createdAt: new Date().getTime(),
+                            system: true
+                        })
+                    });
+
+                var chatCreated = firestore().collection("MESSAGE_THREADS");
+                var newChat = {};
+                await chatCreated.where("sender", "==", psychologist.user.id).get()
+                    .then(function (querySnapshot) {
+                        querySnapshot.forEach(function (doc) {
+                            if (doc.data().sender == psychologist.user.id) {
+                                isExist = true;
+                                newChat = {
+                                    _id: doc.id,
+                                    name: '',
+                                    latestMessage: { text: '' },
+                                    ...doc.data()
+                                }
+                            }
+                        });
+                    });
+                this.props.navigation.navigate('Messages', { thread: newChat })
+            }
+        } else {
+            this.props.navigation.navigate('Messages', { thread: chat })
+        }
     }
 
     renderItem = ({ item }) => (
@@ -71,7 +142,7 @@ class ListEmergency extends React.Component {
             <Text style={styles.adress}>Localização: </Text>
             <Text style={styles.adressValue}>{item.fullAdress}</Text>
             <View style={styles.containerButton}>
-                <TouchableHighlight style={styles.buttonList} onPress={() => { }}>
+                <TouchableHighlight style={styles.buttonList} onPress={() => { this.handleButtonPress(item) }}>
                     <Text style={styles.buttonText}>Mensagem</Text>
                 </TouchableHighlight>
             </View>

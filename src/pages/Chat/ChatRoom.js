@@ -12,6 +12,7 @@ import firestore from '@react-native-firebase/firestore'
 import Separator from '../../components/Separator'
 import { useAuth } from '../../context/auth';
 import Reactotron from 'reactotron-react-native';
+import Icon from 'react-native-vector-icons/Feather';
 
 export default function ChatRoom({ navigation }) {
     const [threads, setThreads] = useState([])
@@ -63,12 +64,31 @@ export default function ChatRoom({ navigation }) {
                         <TouchableOpacity onPress={() => navigation.navigate('Messages', { thread: item })}>
                             <View style={styles.listContainer}>
                                 <View style={styles.content}>
-                                    <View style={styles.header}>
-                                        <Text style={styles.nameText}>{user.typeUser === 1 ? item.nameUser : item.name}</Text>
+                                    <View style={{ flexDirection: "row" }}>
+                                        <View style={{ flexDirection: "column", flex: 1 }}>
+                                            <View style={styles.header}>
+                                                <Text style={styles.nameText}>{user.typeUser === 1 ? item.nameUser : item.name}</Text>
+                                            </View>
+                                            <Text style={styles.contentText}>
+                                                {item.latestMessage.text.slice(0, 90)}
+                                            </Text>
+                                        </View>
+
+                                        {
+                                            item.patientShow === true && user.typeUser === 2 &&
+                                            <View>
+                                                {/* <Icon name={"eye"} size={22} style={{ alignSelf: "flex-end", justifyContent: "center" }} /> */}
+                                                <View style={styles.coutMessage}><Text style={styles.textCountMessage}>{item.countPatientMessages}</Text></View>
+                                            </View>
+                                        }
+                                        {
+                                            item.psychologistShow === true && user.typeUser === 1 &&
+                                            <View>
+                                                {/* <Icon name={"eye"} size={22} style={{ alignSelf: "flex-end", justifyContent: "center" }} /> */}
+                                                <View style={styles.coutMessage}><Text style={styles.textCountMessage}>{item.countPsychologistMessages}</Text></View>
+                                            </View>
+                                        }
                                     </View>
-                                    <Text style={styles.contentText}>
-                                        {item.latestMessage.text.slice(0, 90)}
-                                    </Text>
                                 </View>
                             </View>
                         </TouchableOpacity>
@@ -89,6 +109,21 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#fafafa",
         height: "100%"
+    },
+    textCountMessage: {
+        fontWeight: "bold",
+        fontSize: 12
+    },
+    coutMessage: {
+        marginTop: "50%",
+        alignSelf: "flex-end",
+        justifyContent: "center",
+        alignContent: "center",
+        backgroundColor: "#FC6663",
+        width: 30,
+        height: 30,
+        borderRadius: 30 / 2,
+        alignItems: "center"
     },
     listContainer: {
         backgroundColor: "#FFF",

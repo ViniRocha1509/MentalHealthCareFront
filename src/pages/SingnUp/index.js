@@ -19,6 +19,7 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import SectionedMultiSelect from 'react-native-sectioned-multi-select';
 import api from '../../services/api';
+import reactotron from 'reactotron-react-native';
 
 const SignUp = (props) => {
 
@@ -57,10 +58,11 @@ const SignUp = (props) => {
             if (type === 1) {
                 await signUp({ email, name, lastName, cpf, password, confirmPassword });
             } else {
-                await signUpPsychologist({ email, name, lastName, cpf, password, confirmPassword }, { crm, cep, city, state, district, street, number, complement, gender: parseInt(gender, 10), specialtyJson })
+                await signUpPsychologist({ email, name, lastName, cpf, password, confirmPassword }, { crm, phone, cep, city, state, district, street, number, complement, gender: parseInt(gender, 10), specialtyJson })
             }
             navigation.navigate('SingnIn');
         } catch (error) {
+            reactotron.log(error);
             showError(error.message);
         }
     }

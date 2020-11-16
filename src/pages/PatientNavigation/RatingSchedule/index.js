@@ -28,7 +28,6 @@ class RatingSchedule extends React.Component {
 
     ratingPsychologist = async () => {
         try {
-            reactotron.log(this.state);
             const response = await api.post('/Rates', {
                 PsychologistId: this.state.psychologistId,
                 Avaliation: this.state.rating,

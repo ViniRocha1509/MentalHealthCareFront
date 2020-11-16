@@ -87,6 +87,7 @@ class ListPsychologist extends React.Component {
                     .add({
                         name: psychologist.user.name + " " + psychologist.user.lastName,
                         nameUser: userLoged.name + " " + userLoged.lastName,
+                        emergency: false,
                         recipient: userLoged.id,
                         sender: psychologist.user.id,
                         patientUser: userLoged.id,
