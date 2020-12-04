@@ -8,6 +8,7 @@ import firestore from '@react-native-firebase/firestore';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import Spinner from 'react-native-loading-spinner-overlay';
+import reactotron from 'reactotron-react-native';
 
 class ListEmergency extends React.Component {
     state = {
@@ -37,6 +38,14 @@ class ListEmergency extends React.Component {
 
     componentWillUnmount() {
         this._unsubscribe();
+    }
+
+    isEmpty(obj) {
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop))
+                return false;
+        }
+        return true;
     }
 
     handleButtonPress = async (psychologist) => {
@@ -142,7 +151,11 @@ class ListEmergency extends React.Component {
             <Text style={styles.adress}>Localização: </Text>
             <Text style={styles.adressValue}>{item.fullAdress}</Text>
             <View style={styles.containerButton}>
-                <TouchableHighlight style={styles.buttonList} onPress={() => { this.handleButtonPress(item) }}>
+                <TouchableHighlight style={styles.buttonList} onPress={() => {
+                    reactotron.log(item);
+                    this.handleButtonPress(item)
+
+                }}>
                     <Text style={styles.buttonText}>Mensagem</Text>
                 </TouchableHighlight>
             </View>

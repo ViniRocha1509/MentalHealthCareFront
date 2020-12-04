@@ -57,13 +57,8 @@ const SignIn = (props) => {
                 </TouchableHighlight>
             </View>
             <View style={styles.containerButton}>
-                <View style={styles.forgotPassword}>
-                    <TouchableHighlight>
-                        <Text style={styles.linkText}>Esqueceu a senha?</Text>
-                    </TouchableHighlight>
-                </View>
                 <View style={styles.Anonymous}>
-                    <TouchableHighlight>
+                    <TouchableHighlight onPress={() => { navigation.navigate('ListPsychologist', { isOff: true }) }}>
                         <Text style={styles.linkText}>Entra anônimo</Text>
                     </TouchableHighlight>
                 </View>

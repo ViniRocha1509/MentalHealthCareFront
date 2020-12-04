@@ -156,6 +156,7 @@ class ScheduleList extends React.Component {
         } catch (error) {
             this.setState({ spinner: false });
             showError(error.response.data);
+            this.setState({ spinner: false })
         }
     }
 

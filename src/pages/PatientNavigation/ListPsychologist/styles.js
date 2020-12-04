@@ -108,6 +108,19 @@ const styles = StyleSheet.create({
         margin: 3,
         marginTop: 5
     },
+    
+    touchButtonDisabled: {
+        flex: 1,
+        padding: 20,
+        borderRadius: 5,
+        backgroundColor: '#a9a9a9',
+        width: "33.3%",
+        height: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: 3,
+        marginTop: 5
+    },
 
     buttonText: {
         color: '#FFF',

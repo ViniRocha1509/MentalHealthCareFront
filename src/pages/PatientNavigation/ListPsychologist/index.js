@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, SafeAreaView, Image, TouchableHighlight, ScrollView, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, FlatList, SafeAreaView, Image, TouchableHighlight, ScrollView, TextInput, ActivityIndicator, Alert } from 'react-native';
 import { Rating } from 'react-native-ratings';
 import { showError } from '../../../common';
 import api from '../../../services/api';
@@ -25,6 +25,7 @@ class ListPsychologist extends React.Component {
         withResult: true,
         threads: [],
         loadSpinner: true,
+        isOff: this.props.route.params ?? false
     }
 
     initialFilter = {
@@ -39,7 +40,23 @@ class ListPsychologist extends React.Component {
         rating: 0,
     }
 
+    SingUpAlert = () =>
+        Alert.alert(
+            "Não é possivel executar está função!",
+            'Para realizar está função é necessário que o usuário esteja logado.',
+            [
+                {
+                    text: "Cancelar",
+                    onPress: () => { },
+                    style: "cancelar"
+                },
+                { text: "Criar conta", onPress: () => { this.props.navigation.navigate('SingnUp') } }
+            ],
+            { cancelable: false }
+        );
+
     componentDidMount() {
+        console.log(this.props.route.params);
         this._unsubscribe = this.props.navigation.addListener('focus', () => {
             this.setState({ isfilter: true, docs: [] });
             this.loadPsychologist(this.initialFilter);
@@ -161,20 +178,34 @@ class ListPsychologist extends React.Component {
             <Text style={styles.adress}>Localização: </Text>
             <Text style={styles.adressValue}>{item.fullAdress}</Text>
             <View style={styles.containerButton}>
-                <TouchableHighlight style={styles.buttonList} onPress={() => {
-                    this.props.navigation.navigate('Schedule', {
-                        psychologistId: item.id
-                    });
+                <TouchableHighlight style={this.state.isOff ? styles.touchButtonDisabled : styles.buttonList} onPress={() => {
+                    if (this.state.isOff) {
+                        this.SingUpAlert();
+                    } else {
+                        this.props.navigation.navigate('Schedule', {
+                            psychologistId: item.id
+                        });
+                    }
                 }}>
                     <Text style={styles.buttonText}>Agendar</Text>
                 </TouchableHighlight>
-                <TouchableHighlight style={styles.buttonList} onPress={() => { this.handleButtonPress(item) }}>
+                <TouchableHighlight style={this.state.isOff ? styles.touchButtonDisabled : styles.buttonList} onPress={() => {
+                    if (this.state.isOff) {
+                        this.SingUpAlert();
+                    } else {
+                        this.handleButtonPress(item);
+                    }
+                }}>
                     <Text style={styles.buttonText}>Mensagem</Text>
                 </TouchableHighlight>
-                <TouchableHighlight style={styles.buttonList} onPress={() => {
-                    this.props.navigation.navigate('ProfilePsychologist', {
-                        psychologistId: item.id
-                    });
+                <TouchableHighlight style={this.state.isOff ? styles.touchButtonDisabled : styles.buttonList} onPress={() => {
+                    if (this.state.isOff) {
+                        this.SingUpAlert();
+                    } else {
+                        this.props.navigation.navigate('ProfilePsychologist', {
+                            psychologistId: item.id
+                        });
+                    }
                 }}>
                     <Text style={styles.buttonText}>Pefil</Text>
                 </TouchableHighlight>
